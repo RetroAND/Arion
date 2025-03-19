@@ -2,10 +2,8 @@
 
 #include <string>
 
-using namespace std;
-
-void dir(string path);
-void statistics(string path);
-void volume(string path);
-void extractAll(string path, string savePath);
+void dir(std::string path);
+void statistics(std::string path);
+void volume(std::string path);
+void extractAll(std::string path, std::string savePath);
 void help();

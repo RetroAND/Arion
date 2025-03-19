@@ -2,6 +2,8 @@
 #include "dependencies/FloppyLib/include/FloppyLib.h"
 #include <iostream>
 
+using namespace std;
+
 void dir(string path)
 {
 	Disk disk = Disk();
@@ -106,4 +108,5 @@ void help()
 	printf("Paths:\n");
 	printf("path1: must be the path to the image FILE\n");
 	printf("path2: must be the path to the DIRECTORY where the files are to be extracted\n");
+	printf("\n");
 }

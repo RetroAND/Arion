@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		printf("ERROR");
+		printf("ERROR: Unknown command");
 	}
 	return 0;
 }
