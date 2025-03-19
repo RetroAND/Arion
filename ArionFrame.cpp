@@ -20,6 +20,12 @@ ArionFrame::ArionFrame() : wxFrame(nullptr, wxID_ANY, "Arion")
 	Bind(wxEVT_MENU, &ArionFrame::OnExit, this, wxID_EXIT);
 	Bind(wxEVT_MENU, &ArionFrame::OnOpenFile, this, ID_OpenFile);
 	Bind(wxEVT_MENU, &ArionFrame::OnAutoIdentification, this, ID_AutoIdentification);
+	Bind(wxEVT_COMBOBOX, &ArionFrame::OnHeadSelected, this, ID_HeadComboBox);
+	Bind(wxEVT_COMBOBOX, &ArionFrame::OnCylinderSelected, this, ID_CylinderComboBox);
+	Bind(wxEVT_COMBOBOX, &ArionFrame::OnSectorSelected, this, ID_SectorComboBox);
+	Bind(wxEVT_LISTBOX, &ArionFrame::OnFileChosen, this, ID_DiskFileList);
+	Bind(wxEVT_BUTTON, &ArionFrame::OnFileExport, this, ID_ExportAllFiles);
+
 	Bind(wxEVT_MENU, &ArionFrame::OnCloseFile, this, ID_CloseFile);
 }
 
@@ -51,8 +57,8 @@ void ArionFrame::InitMain()
 	volumeInfoPage = new DiskVolumeInfoPanel(mainPanel, nullptr);
 	mainPanel->AddPage(volumeInfoPage, "Volume");
 
-	wxPanel* filesPage = new wxPanel(mainPanel, wxID_ANY);
-	mainPanel->AddPage(filesPage, "Files");
+	this->filePanel = new DiskFilePanel(mainPanel);
+	mainPanel->AddPage(filePanel, "Files");
 
 	hbox->Add(mainPanel, 5, wxEXPAND | wxTOP | wxRIGHT | wxBOTTOM, 5);
 	panel->SetSizer(hbox);
@@ -92,6 +98,7 @@ void ArionFrame::OnCloseFile(wxCommandEvent& event)
 	this->stats->UpdateStats(nullptr);
 	this->sectorInfoPage->UpdateInfo(nullptr);
 	this->volumeInfoPage->UpdateVolumeInfo(nullptr);
+	this->filePanel->UpdateFiles(nullptr);
 }
 
 void ArionFrame::OnAutoIdentification(wxCommandEvent& event)
@@ -112,6 +119,13 @@ void ArionFrame::ShowErrorDialog(string title, string text)
 	dialog->ShowModal();
 }
 
+void ArionFrame::ShowConfirmationDialog(string title, string text)
+{
+	wxMessageDialog* dialog = new wxMessageDialog(NULL,
+		text, title, wxOK | wxICON_INFORMATION);
+	dialog->ShowModal();
+}
+
 void ArionFrame::IdentifyDisk()
 {
 	this->disk->SetType(Type_Unknown);
@@ -121,11 +135,53 @@ void ArionFrame::IdentifyDisk()
 	{
 		this->interchange = new InterchangeDisk(*this->disk);
 		this->volumeInfoPage->UpdateVolumeInfo(&this->interchange->GetVolume());
+		this->filePanel->UpdateFiles(&this->interchange->GetFiles());
 	}
 	else
 	{
 		delete this->interchange;
 		this->interchange = nullptr;
 		this->volumeInfoPage->UpdateVolumeInfo(nullptr);
+		this->filePanel->UpdateFiles(nullptr);
+	}
+}
+
+void ArionFrame::OnHeadSelected(wxCommandEvent& event)
+{
+	this->sectorInfoPage->SetHead(this->sectorInfoPage->headComboBox->GetSelection());
+	this->sectorInfoPage->GenerateTracks(this->disk->GetTracksByHead(this->sectorInfoPage->GetHead()).size());
+	this->sectorInfoPage->GenerateSectors(this->disk->GetTrack(this->sectorInfoPage->GetCylinder(), this->sectorInfoPage->GetHead()).GetSectorNumber());
+	//update visor
+}
+
+void ArionFrame::OnCylinderSelected(wxCommandEvent& event)
+{
+	this->sectorInfoPage->SetCylinder(this->sectorInfoPage->cylinderComboBox->GetSelection());
+	this->sectorInfoPage->GenerateSectors(this->disk->GetTrack(this->sectorInfoPage->GetCylinder(), this->sectorInfoPage->GetHead()).GetSectorNumber());
+	//update visor
+}
+
+void ArionFrame::OnSectorSelected(wxCommandEvent& event)
+{
+	this->sectorInfoPage->SetSector(this->sectorInfoPage->sectorComboBox->GetSelection());
+	//update visor
+}
+
+void ArionFrame::OnFileChosen(wxCommandEvent& event)
+{
+	this->filePanel->SelectFile(this->filePanel->fileList->GetSelection());
+}
+
+void ArionFrame::OnFileExport(wxCommandEvent& event)
+{
+	wxDirDialog selectFolderDialog = new wxDirDialog(this, "Choose export directory", "", wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST);
+	if (selectFolderDialog.ShowModal()==wxID_OK)
+	{
+		vector<InterchangeFile> files = this->interchange->GetFiles();
+		for (int file = 0; file < files.size(); file++)
+		{
+			files[file].SaveToFile(selectFolderDialog.GetPath().ToStdString());
+		}
+		this->ShowConfirmationDialog("Operation conducted successfully", "The files have been saved at the specified directory.");
 	}
 }

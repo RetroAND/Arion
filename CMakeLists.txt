@@ -13,11 +13,9 @@ project (Arion LANGUAGES CXX)
 
 include(FetchContent)
 
-#add_subdirectory(dependencies/FloppyLib)
+add_subdirectory(dependencies/FloppyLib)
 #add_subdirectory(dependencies/wxWidgets)
 
-find_library(FloppyLib NAMES FloppyLib.dll PATHS dependencies/FloppyLib NO_SYSTEM_ENVIRONMENT_PATH)
-include_directories(dependencies/FloppyLib/include)
 
 # Add source to this project's executable.
 add_executable (Arion "Arion.cpp" "commands.cpp")
@@ -34,7 +32,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(wxWidgets)
 
-add_executable(arion_gui "arion_gui.cpp" "ArionApp.cpp" "ArionFrame.cpp" "DiskStatsPanel.cpp" "DiskVolumeInfoPanel.cpp" "SectorInfoPanel.cpp")
+add_executable(arion_gui "arion_gui.cpp" "ArionApp.cpp" "ArionFrame.cpp" "DiskStatsPanel.cpp" "DiskVolumeInfoPanel.cpp" "SectorInfoPanel.cpp" "SectorHexPanel.cpp" "DiskFilePanel.cpp")
 target_link_libraries(arion_gui PUBLIC FloppyLib wx::net wx::core wx::base)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

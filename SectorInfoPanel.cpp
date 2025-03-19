@@ -1,5 +1,6 @@
 #include <vector>
 #include "SectorInfoPanel.h"
+#include "AppId.h"
 
 using namespace std;
 
@@ -22,16 +23,17 @@ SectorInfoPanel::SectorInfoPanel(wxWindow* parent, Disk* disk) : wxPanel(parent,
 	
 	wxPanel* comboPanel = new wxPanel(infoPanel, wxID_ANY);
 	wxStaticText* headLabel = new wxStaticText(comboPanel, wxID_ANY, wxT("Head:"));
-	this->headComboBox = new wxComboBox(comboPanel, wxID_ANY);
+	this->headComboBox = new wxComboBox(comboPanel, ID_HeadComboBox);
 	this->GenerateHeads(1);
 	this->headComboBox->SetSelection(this->head);
+
 	wxStaticText* cylinderLabel = new wxStaticText(comboPanel, wxID_ANY, wxT("Cylinder:"));
-	this->cylinderComboBox = new wxComboBox(comboPanel, wxID_ANY);
+	this->cylinderComboBox = new wxComboBox(comboPanel, ID_CylinderComboBox);
 	this->GenerateTracks(77);
 	this->cylinderComboBox->SetSelection(this->cylinder);
 
 	wxStaticText* sectorLabel = new wxStaticText(comboPanel, wxID_ANY, wxT("Sector:"));
-	this->sectorComboBox = new wxComboBox(comboPanel, wxID_ANY);
+	this->sectorComboBox = new wxComboBox(comboPanel, ID_SectorComboBox);
 	this->GenerateSectors(26);
 	this->sectorComboBox->SetSelection(this->sector);
 
@@ -51,6 +53,7 @@ SectorInfoPanel::SectorInfoPanel(wxWindow* parent, Disk* disk) : wxPanel(parent,
 	this->SetSizer(pageSizer);
 	pageSizer->Add(nothingPanel);
 	pageSizer->Add(infoPanel);
+
 
 	this->UpdateInfo(this->disk);
 }
@@ -105,6 +108,7 @@ void SectorInfoPanel::GenerateTracks(char tracks)
 
 void SectorInfoPanel::GenerateSectors(char sectors)
 {
+	this->sectorComboBox->Clear();
 	for (int i = 1; i <= sectors; i++)
 	{
 		this->sectorComboBox->Append(wxString::Format("%d", i));
@@ -113,25 +117,35 @@ void SectorInfoPanel::GenerateSectors(char sectors)
 	{
 		this->sector = sectors - 1;
 	}
-	this->headComboBox->SetSelection(this->sector);
+	this->sectorComboBox->SetSelection(this->sector);
 }
 
-void SectorInfoPanel::OnHeadSelected(wxCommandEvent& event)
+char SectorInfoPanel::GetHead()
 {
-	this->head = this->headComboBox->GetSelection();
-	this->GenerateTracks(disk->GetTracksByHead(this->head).size());
-	this->GenerateSectors(disk->GetTrack(this->cylinder, this->head).GetSectors().size());
-	//update visor
+	return this->head;
 }
 
-void SectorInfoPanel::OnCylinderSelected(wxCommandEvent& event)
+char SectorInfoPanel::GetCylinder()
 {
-	this->cylinder = this->cylinderComboBox->GetSelection();
-	this->GenerateSectors(disk->GetTrack(this->cylinder, this->head).GetSectors().size());
-	//update visor
+	return this->cylinder;
 }
 
-void SectorInfoPanel::OnSectorSelected(wxCommandEvent& event)
+char SectorInfoPanel::GetSector()
 {
-	this->sector = this->sectorComboBox->GetSelection();
+	return this->sector;
+}
+
+void SectorInfoPanel::SetHead(char head)
+{
+	this->head = head;
+}
+
+void SectorInfoPanel::SetCylinder(char cylinder)
+{
+	this->cylinder = cylinder;
+}
+
+void SectorInfoPanel::SetSector(char sector)
+{
+	this->sector = sector;
 }

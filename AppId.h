@@ -9,4 +9,6 @@ enum
 	ID_CylinderComboBox = 5,
 	ID_HeadComboBox = 6,
 	ID_SectorComboBox = 7,
+	ID_DiskFileList = 8,
+	ID_ExportAllFiles = 9
 };

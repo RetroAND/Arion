@@ -5,6 +5,7 @@
 #include "DiskVolumeInfoPanel.h"
 #include "dependencies/FloppyLib/include/FloppyLib.h"
 #include "SectorInfoPanel.h"
+#include "DiskFilePanel.h"
 
 class ArionFrame : public wxFrame
 {
@@ -16,6 +17,7 @@ class ArionFrame : public wxFrame
 		InterchangeDisk* interchange;
 		SectorInfoPanel* sectorInfoPage;
 		DiskVolumeInfoPanel* volumeInfoPage;
+		DiskFilePanel* filePanel;
 		void InitMain();
 		void OnOpenFile(wxCommandEvent& event);
 		void OnCloseFile(wxCommandEvent& event);
@@ -24,4 +26,10 @@ class ArionFrame : public wxFrame
 		void OnExit(wxCommandEvent& event);
 		void ShowErrorDialog(std::string title, std::string text);
 		void IdentifyDisk();
+		void OnHeadSelected(wxCommandEvent& event);
+		void OnCylinderSelected(wxCommandEvent& event);
+		void OnSectorSelected(wxCommandEvent& event);
+		void OnFileChosen(wxCommandEvent& event);
+		void OnFileExport(wxCommandEvent& event);
+		void ShowConfirmationDialog(std::string title, std::string text);
 };
