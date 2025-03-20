@@ -1,4 +1,7 @@
 #include <wx/notebook.h>
+#include <exception>
+#include <typeinfo>
+#include <stdexcept>
 #include "ArionFrame.h"
 #include "AppId.h"
 #include "DiskStatsPanel.h"
@@ -79,15 +82,23 @@ void ArionFrame::OnOpenFile(wxCommandEvent& event)
 	if (openFileDialog->ShowModal() == wxID_OK) {
 		wxString fileName = openFileDialog->GetPath();
 		this->disk = new Disk();
-		int state = disk->LoadFromImd(fileName.ToStdString());
-		if (state == 0)
+		try
 		{
-			DiskStatistics stats = disk->GetStatistics();
-			this->stats->UpdateStats(&stats);
-			this->sectorInfoPage->UpdateInfo(disk);
-			Sector sector = this->disk->GetSector(CylinderHeadSector(this->sectorInfoPage->GetCylinder(), this->sectorInfoPage->GetHead(), this->sectorInfoPage->GetSector()));
-			this->sectorInfoPage->hexPanel->UpdateSector(&sector);
-			this->IdentifyDisk();
+			int state = disk->LoadFromImd(fileName.ToStdString());
+		
+			if (state == 0)
+			{
+				DiskStatistics stats = disk->GetStatistics();
+				this->stats->UpdateStats(&stats);
+				this->sectorInfoPage->UpdateInfo(disk);
+				Sector sector = this->disk->GetSector(CylinderHeadSector(this->sectorInfoPage->GetCylinder(), this->sectorInfoPage->GetHead(), this->sectorInfoPage->GetSector()));
+				this->sectorInfoPage->hexPanel->UpdateSector(&sector);
+				this->IdentifyDisk();
+			}
+		}
+		catch (const exception exception)
+		{
+			cout << exception.what() << endl;
 		}
 	}
 	delete openFileDialog;
