@@ -11,7 +11,7 @@ ArionFrame::ArionFrame() : wxFrame(nullptr, wxID_ANY, "Arion")
 {
 	this->disk = nullptr;
 
-	this->SetMinClientSize(FromDIP(wxSize(640, 480)));
+	this->SetMinClientSize(FromDIP(wxSize(800, 600)));
 	this->InitMain();
 
 	CreateStatusBar();
@@ -47,9 +47,9 @@ void ArionFrame::InitMain()
 	wxPanel* panel = new wxPanel(this, wxID_ANY);
 	this->stats = new DiskStatsPanel(panel, nullptr);
 	wxBoxSizer* hbox = new wxBoxSizer(wxHORIZONTAL);
-	hbox->Add(this->stats, 1, wxEXPAND | wxTOP | wxRIGHT | wxBOTTOM, 5);	
+	hbox->Add(this->stats);	
 
-	wxNotebook* mainPanel = new wxNotebook(panel, wxID_ANY);
+	wxNotebook* mainPanel = new wxNotebook(panel, wxID_ANY, wxPoint(0,0), wxSize(640, 480));
 
 	this->sectorInfoPage = new SectorInfoPanel(mainPanel, this->disk);
 	mainPanel->AddPage(sectorInfoPage, "Sectors");
@@ -60,7 +60,8 @@ void ArionFrame::InitMain()
 	this->filePanel = new DiskFilePanel(mainPanel);
 	mainPanel->AddPage(filePanel, "Files");
 
-	hbox->Add(mainPanel, 5, wxEXPAND | wxTOP | wxRIGHT | wxBOTTOM, 5);
+	hbox->Add(mainPanel, 0, wxEXPAND | wxRIGHT | wxBOTTOM, 5);
+
 	panel->SetSizer(hbox);
 	this->Centre();
 }
@@ -84,6 +85,8 @@ void ArionFrame::OnOpenFile(wxCommandEvent& event)
 			DiskStatistics stats = disk->GetStatistics();
 			this->stats->UpdateStats(&stats);
 			this->sectorInfoPage->UpdateInfo(disk);
+			Sector sector = this->disk->GetSector(CylinderHeadSector(this->sectorInfoPage->GetCylinder(), this->sectorInfoPage->GetHead(), this->sectorInfoPage->GetSector()));
+			this->sectorInfoPage->hexPanel->UpdateSector(&sector);
 			this->IdentifyDisk();
 		}
 	}
@@ -151,20 +154,23 @@ void ArionFrame::OnHeadSelected(wxCommandEvent& event)
 	this->sectorInfoPage->SetHead(this->sectorInfoPage->headComboBox->GetSelection());
 	this->sectorInfoPage->GenerateTracks(this->disk->GetTracksByHead(this->sectorInfoPage->GetHead()).size());
 	this->sectorInfoPage->GenerateSectors(this->disk->GetTrack(this->sectorInfoPage->GetCylinder(), this->sectorInfoPage->GetHead()).GetSectorNumber());
-	//update visor
+	Sector sector = this->disk->GetSector(CylinderHeadSector(this->sectorInfoPage->GetCylinder(), this->sectorInfoPage->GetHead(), this->sectorInfoPage->GetSector()));
+	this->sectorInfoPage->hexPanel->UpdateSector(&sector);
 }
 
 void ArionFrame::OnCylinderSelected(wxCommandEvent& event)
 {
 	this->sectorInfoPage->SetCylinder(this->sectorInfoPage->cylinderComboBox->GetSelection());
 	this->sectorInfoPage->GenerateSectors(this->disk->GetTrack(this->sectorInfoPage->GetCylinder(), this->sectorInfoPage->GetHead()).GetSectorNumber());
-	//update visor
+	Sector sector = this->disk->GetSector(CylinderHeadSector(this->sectorInfoPage->GetCylinder(), this->sectorInfoPage->GetHead(), this->sectorInfoPage->GetSector()));
+	this->sectorInfoPage->hexPanel->UpdateSector(&sector);
 }
 
 void ArionFrame::OnSectorSelected(wxCommandEvent& event)
 {
 	this->sectorInfoPage->SetSector(this->sectorInfoPage->sectorComboBox->GetSelection());
-	//update visor
+	Sector sector = this->disk->GetSector(CylinderHeadSector(this->sectorInfoPage->GetCylinder(), this->sectorInfoPage->GetHead(), this->sectorInfoPage->GetSector()));
+	this->sectorInfoPage->hexPanel->UpdateSector(&sector);
 }
 
 void ArionFrame::OnFileChosen(wxCommandEvent& event)

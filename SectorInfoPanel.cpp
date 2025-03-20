@@ -21,7 +21,7 @@ SectorInfoPanel::SectorInfoPanel(wxWindow* parent, Disk* disk) : wxPanel(parent,
 	wxBoxSizer* infoSizer = new wxBoxSizer(wxVERTICAL);
 	infoPanel->SetSizer(infoSizer);
 	
-	wxPanel* comboPanel = new wxPanel(infoPanel, wxID_ANY);
+	wxPanel* comboPanel = new wxPanel(infoPanel, wxID_ANY, wxPoint(0,0), wxSize(640,64));
 	wxStaticText* headLabel = new wxStaticText(comboPanel, wxID_ANY, wxT("Head:"));
 	this->headComboBox = new wxComboBox(comboPanel, ID_HeadComboBox);
 	this->GenerateHeads(1);
@@ -47,12 +47,14 @@ SectorInfoPanel::SectorInfoPanel(wxWindow* parent, Disk* disk) : wxPanel(parent,
 
 	comboPanel->SetSizer(comboSizer);
 
-	infoSizer->Add(comboPanel);
+	this->hexPanel = new SectorHexPanel(infoPanel);
+	infoSizer->Add(comboPanel, wxEXPAND | wxLEFT | wxRIGHT);
+	infoSizer->Add(this->hexPanel);
 
 	wxBoxSizer* pageSizer = new wxBoxSizer(wxVERTICAL);
 	this->SetSizer(pageSizer);
-	pageSizer->Add(nothingPanel);
-	pageSizer->Add(infoPanel);
+	pageSizer->Add(nothingPanel, wxEXPAND | wxALL);
+	pageSizer->Add(infoPanel, wxEXPAND | wxALL);
 
 
 	this->UpdateInfo(this->disk);

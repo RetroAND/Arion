@@ -2,7 +2,7 @@
 
 using namespace std;
 
-DiskStatsPanel::DiskStatsPanel(wxPanel* parent, DiskStatistics* statistics) : wxPanel(parent, -1, wxPoint(-1, -1), wxSize(270, 150))
+DiskStatsPanel::DiskStatsPanel(wxPanel* parent, DiskStatistics* statistics) : wxPanel(parent, -1, wxPoint(-1, -1), wxSize(120, 150))
 {
 	this->statistics = statistics;
 	this->InitStats();

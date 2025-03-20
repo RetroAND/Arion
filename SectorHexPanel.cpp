@@ -1,53 +1,64 @@
 #include "SectorHexPanel.h"
 
-SectorHexPanel::SectorHexPanel(wxWindow* parent) : wxPanel(parent, -1, wxPoint(-1, -1), wxSize(270, 150))
+SectorHexPanel::SectorHexPanel(wxWindow* parent) : wxPanel(parent, -1, wxPoint(-1, -1), wxSize(640, 480))
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
-	this->hexPanel = new wxPanel(this, wxID_ANY);
-	mainSizer->Add(this->hexPanel);
+	this->hexPanel = new wxGrid(this, wxID_ANY, wxPoint(0, 0), wxSize(640, 480));
+	this->hexPanel->CreateGrid(512, 16);
+	mainSizer->Add(this->hexPanel, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM);
 	this->SetSizer(mainSizer);
-	wxGridSizer* grid = new wxGridSizer(128, 64, 2, 2);
-	this->hexPanel->SetSizer(grid);
-	this->CreateCells();
-}
-
-void SectorHexPanel::CreateCells()
-{
-	wxSizer* sizer = this->hexPanel->GetSizer();
-	for (int i = 0; i < 512; i++)
-	{
-		wxStaticText* cell = new wxStaticText(this->hexPanel, wxID_ANY, wxT("00"));
-		//cell->Hide();
-		sizer->Add(cell);
-		this->cells.push_back(cell);
-	}
 }
 
 void SectorHexPanel::UpdateSector(Sector* sector)
 {
+	this->hexPanel->ClearGrid();
 	if (sector == nullptr)
 	{
-		this->nothingPanel->Show();
-		this->errorPanel->Hide();
+		//this->nothingPanel->Show();
+		//this->errorPanel->Hide();
 		this->hexPanel->Hide();
 	}
 	else if (sector->IsEmpty())
 	{
-		this->nothingPanel->Hide();
-		this->errorPanel->Show();
+		//this->nothingPanel->Hide();
+		//this->errorPanel->Show();
 		this->hexPanel->Hide();
 	}
 	else
 	{
 		this->PrepareCells(sector->GetData());
-		this->nothingPanel->Hide();
-		this->errorPanel->Hide();
-		this->hexPanel->Show();
+		//this->nothingPanel->Hide();
+		//this->errorPanel->Hide();
+		this->hexPanel->Show(true);
 	}
 	this->GetSizer()->Layout();
 }
 
 void SectorHexPanel::PrepareCells(std::vector<char> data)
 {
-
+	int columns = 16;
+	int rows = data.size() / columns;
+	int maxRows = 8192 / columns;
+	for (int column = 0; column < columns; column++)
+	{
+		this->hexPanel->SetColLabelValue(column, wxString::Format("%02x", column));
+	}
+	int offset = 0;
+	for (int currentRow = 0; currentRow < rows; currentRow++)
+	{
+		this->hexPanel->SetRowLabelValue(currentRow, wxString::Format("%04x", offset));
+		this->hexPanel->ShowRow(currentRow);
+		for (int currentColumn = 0; currentColumn < columns; currentColumn++)
+		{
+			this->hexPanel->SetCellValue(currentRow, currentColumn, wxString::Format("%02x", data[currentRow * columns + currentColumn] & 0xff));
+			this->hexPanel->SetReadOnly(currentRow, currentColumn);
+			this->hexPanel->SetCellAlignment(currentRow, currentColumn, wxALIGN_CENTER, wxALIGN_CENTER);
+		}
+		offset += columns;
+	}
+	for (int currentRow = rows; currentRow < maxRows; currentRow++)
+	{
+		this->hexPanel->HideRow(currentRow);
+	}
+	this->hexPanel->AutoSize();
 }

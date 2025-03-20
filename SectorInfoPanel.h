@@ -13,10 +13,9 @@ class SectorInfoPanel : public wxPanel
 		char sector;
 		Disk* disk;
 		wxPanel* nothingPanel;
-		wxPanel* infoPanel;
-		SectorHexPanel* hexPanel;
-		
+		wxPanel* infoPanel;	
 	public:
+		SectorHexPanel* hexPanel;
 		wxComboBox* cylinderComboBox;
 		wxComboBox* headComboBox;
 		wxComboBox* sectorComboBox;
