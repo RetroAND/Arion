@@ -8,9 +8,9 @@
 class SectorInfoPanel : public wxPanel
 {
 	private:
-		char head;
-		char cylinder;
-		char sector;
+		unsigned char head;
+		unsigned char cylinder;
+		unsigned char sector;
 		Disk* disk;
 		wxPanel* nothingPanel;
 		wxPanel* infoPanel;	

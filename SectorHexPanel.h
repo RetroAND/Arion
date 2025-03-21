@@ -11,6 +11,7 @@ class SectorHexPanel : public wxPanel
 		int length;
 		std::vector<wxStaticText*> cells;
 		void PrepareCells(std::vector<char> data);
+		wxStaticText* sectorError;
 		wxPanel* nothingPanel;
 		wxPanel* errorPanel;		
 	public:

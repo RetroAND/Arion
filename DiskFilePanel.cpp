@@ -30,7 +30,7 @@ DiskFilePanel::DiskFilePanel(wxWindow* parent) : wxPanel(parent, -1, wxPoint(-1,
 	listContainerSizer->Add(this->listPanel);
 
 	wxPanel* fileInfoPanel = new wxPanel(listContainerPanel, wxID_ANY);
-	wxFlexGridSizer* fileInfoSizer = new wxFlexGridSizer(20,2,0,0);
+	wxFlexGridSizer* fileInfoSizer = new wxFlexGridSizer(21,2,0,0);
 	listContainerSizer->Add(fileInfoPanel);
 	wxStaticText* fileIdentifierLabel = new wxStaticText(fileInfoPanel, wxID_ANY, wxT("File Identifier: "));
 	this->fileIdentifier = new wxStaticText(fileInfoPanel, wxID_ANY, wxT("***********"));
@@ -72,6 +72,8 @@ DiskFilePanel::DiskFilePanel(wxWindow* parent) : wxPanel(parent, -1, wxPoint(-1,
 	this->datasetOrganization = new wxStaticText(fileInfoPanel, wxID_ANY, wxT("'*'"));
 	wxStaticText* endOfDataLabel = new wxStaticText(fileInfoPanel, wxID_ANY, wxT("End of Data: "));
 	this->endOfData = new wxStaticText(fileInfoPanel, wxID_ANY, wxT("'C: ** H: * S: **'"));
+	wxStaticText* creatingMachineLabel = new wxStaticText(fileInfoPanel, wxID_ANY, wxT("Creating Machine: "));
+	this->creatingMachine = new wxStaticText(fileInfoPanel, wxID_ANY, wxT("'*************'"));
 	fileInfoSizer->Add(fileIdentifierLabel);
 	fileInfoSizer->Add(fileIdentifier);
 	fileInfoSizer->Add(blockLengthLabel);
@@ -112,6 +114,8 @@ DiskFilePanel::DiskFilePanel(wxWindow* parent) : wxPanel(parent, -1, wxPoint(-1,
 	fileInfoSizer->Add(datasetOrganization);
 	fileInfoSizer->Add(endOfDataLabel);
 	fileInfoSizer->Add(endOfData);
+	fileInfoSizer->Add(creatingMachineLabel);
+	fileInfoSizer->Add(creatingMachine);
 	fileInfoPanel->SetSizer(fileInfoSizer);
 	this->exportAllButton = new wxButton(this->listPanel, ID_ExportAllFiles, wxT("Export All"));
 	listSizer->Add(this->exportAllButton);
@@ -186,4 +190,5 @@ void DiskFilePanel::SelectFile(int file)
 	this->verifyCopyIndicator->SetLabel(wxString::Format("'%c'", this->files[this->selected].GetVerifyCopyIndicator()));
 	this->datasetOrganization->SetLabel(wxString::Format("'%c'", this->files[this->selected].GetDatasetOrganization()));
 	this->endOfData->SetLabel(wxString::Format("C: %d H: %d S: %d", this->files[this->selected].GetEndOfData().GetCylinder(), this->files[this->selected].GetEndOfData().GetHead(), this->files[this->selected].GetEndOfData().GetSector()));
+	this->creatingMachine->SetLabel(this->files[this->selected].GetCreatingSystem());
 }

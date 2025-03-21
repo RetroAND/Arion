@@ -3,6 +3,8 @@
 SectorHexPanel::SectorHexPanel(wxWindow* parent) : wxPanel(parent, -1, wxPoint(-1, -1), wxSize(640, 480))
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+	this->sectorError = new wxStaticText(this, wxID_ANY, wxT("WARNING: This sector was recovered with errors. Data may be corrupted."));
+	mainSizer->Add(this->sectorError);
 	this->hexPanel = new wxGrid(this, wxID_ANY, wxPoint(0, 0), wxSize(640, 480));
 	this->hexPanel->CreateGrid(512, 16);
 	mainSizer->Add(this->hexPanel, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM);
@@ -29,6 +31,14 @@ void SectorHexPanel::UpdateSector(Sector* sector)
 		this->PrepareCells(sector->GetData());
 		//this->nothingPanel->Hide();
 		//this->errorPanel->Hide();
+		if (sector->HasError())
+		{
+			this->sectorError->Show();
+		}
+		else
+		{
+			this->sectorError->Hide();
+		}
 		this->hexPanel->Show(true);
 	}
 	this->GetSizer()->Layout();

@@ -5,7 +5,7 @@
 #include "ArionFrame.h"
 #include "AppId.h"
 #include "DiskStatsPanel.h"
-#include "Types.h"
+#include "dependencies/FloppyLib/include/FloppyLib.h"
 #include "DiskVolumeInfoPanel.h"
 
 using namespace std;

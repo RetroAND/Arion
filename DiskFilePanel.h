@@ -33,6 +33,7 @@ class DiskFilePanel : public wxPanel
 		wxStaticText* verifyCopyIndicator;
 		wxStaticText* datasetOrganization;
 		wxStaticText* endOfData;
+		wxStaticText* creatingMachine;
 		wxPanel* listContainerPanel;
 	public:
 		wxListBox* fileList;
